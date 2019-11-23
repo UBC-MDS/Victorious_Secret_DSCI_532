@@ -15,4 +15,4 @@ Group Members:
 
 
 
-![Dashboard Sketch](img/victorioius_secret_dashboard.png)
+![Dashboard Sketch]('img/victorioius_secret_dashboard.png')
