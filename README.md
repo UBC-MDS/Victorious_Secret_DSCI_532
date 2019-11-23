@@ -15,4 +15,4 @@ Group Members:
 
 
 
-![Dashboard Sketch]('img/victorioius_secret_dashboard.png')
+![Dashboard Sketch](https://github.com/UBC-MDS/Victorious_Secret_DSCI_532/blob/master/img/victorious_secret_dashboard.png?raw=true)
