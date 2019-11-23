@@ -8,3 +8,11 @@ Group Members:
 - Anas Muhammad，
 - Polina Romanchenko，
 - Xinwen Wang
+
+# App Description 
+
+
+
+
+
+![Dashboard Sketch](img/victorioius_secret_dashboard.png)
