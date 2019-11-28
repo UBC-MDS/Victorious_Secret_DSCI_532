@@ -22,7 +22,7 @@ top_4_crimes.remove("OTHER OFFENSES")
 # top 4 crimes df subset
 df_t4 = df[df["Category"].isin(top_4_crimes)].copy()
 
-def make_plot(xval = 'ASSAULT'):
+def make_plot(df_new=df_t4):
     
     # Create a plot of the Displacement and the Horsepower of the cars dataset
     # making the slider
@@ -38,9 +38,8 @@ def make_plot(xval = 'ASSAULT'):
     }
     # end
     
-    chart = alt.Chart(df_t4).mark_bar(size=30).encode(
-       # x=alt.X('Category:N', title = "Crime category", axis = alt.Axis(labelAngle = 0)),
-        x=alt.X(xval,type=typeDict[xval], title=xval),
+    chart = alt.Chart(df_new).mark_bar(size=30).encode(
+        x=alt.X('Category',type='nominal', title='Category'),
         y=alt.Y('count()', title = "Count" , scale = alt.Scale(domain = (0,3300))),
         tooltip='count()'
     ).properties(
@@ -73,6 +72,7 @@ app.layout = html.Div([
             {'label': i, 'value': i} for i in ['ASSAULT','VANDALISM','LARCENY/THEFT','VEHICLE THEFT']
         ],
         value='ASSAULT',
+        multi=True,
         style=dict(width='45%',
               verticalAlign="middle"
               )
@@ -84,11 +84,19 @@ app.layout = html.Div([
     [dash.dependencies.Input('dd-chart', 'value')]
     )
 
-def update_plot(xaxis_column_name):
+#def update_plot(xaxis_column_name):
 
-    updated_plot = make_plot(xaxis_column_name).to_html()
+    #updated_plot = make_plot(xaxis_column_name).to_html()
+#    updated_plot = make_plot(xaxis_column_name).to_html()
+
+#    return updated_plot
+
+def update_df(chosen):
+    new_df = df_t4[(df_t4["Category"].isin(chosen))]
+    updated_plot = make_plot(new_df).to_html()
 
     return updated_plot
+    
 #end
 if __name__ == '__main__':
     app.run_server(debug=True)
