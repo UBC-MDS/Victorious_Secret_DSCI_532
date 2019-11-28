@@ -12,7 +12,7 @@ alt.data_transformers.enable('default')
 alt.data_transformers.disable_max_rows()
 
 # load in the data
-df = pd.read_csv('data/Police_Department_Incidents_-_Previous_Year__2016_.csv', sep=',')
+df = pd.read_csv("https://raw.github.ubc.ca/MDS-2019-20/DSCI_531_lab4_anas017/master/data/Police_Department_Incidents_-_Previous_Year__2016_.csv?token=AAAHQ0dLxUd74i7Zhzh1SJ_UuOaFVI3_ks5d5dT3wA%3D%3D")
 
 
 app = dash.Dash(__name__, assets_folder='assets')
@@ -31,10 +31,8 @@ top_4_crimes.remove("OTHER OFFENSES")
 # Top 4 crimes df subset
 df_t4 = df[df["Category"].isin(top_4_crimes)].copy()
 
-crimes = ['ASSAULT', 'LARCENY/THEFT', 'VEHICLE THEFT', 'VANDALISM']
-
-def make_plot():
-    chart_1 = alt.Chart(df_t4[]).mark_circle(size=3, opacity = 0.8).encode(
+def make_plot(data=df_t4):
+    chart_1 = alt.Chart(data).mark_circle(size=3, opacity = 0.8).encode(
         longitude='X:Q',
         latitude='Y:Q',
         color = alt.Color('PdDistrict:N', legend = alt.Legend(title = "District")),
@@ -46,7 +44,7 @@ def make_plot():
         height=500
     )
 
-    chart_2 = alt.Chart(df_t4).mark_bar().encode(
+    chart_2 = alt.Chart(data).mark_bar().encode(
         x=alt.X('PdDistrict:N', axis=None, title="District"),
         y=alt.Y('count()', title="Count of reports"),
         color=alt.Color('PdDistrict:N', legend=alt.Legend(title="District")),
@@ -57,7 +55,7 @@ def make_plot():
     )
 
     # A dropdown filter
-    crimes_dropdown = alt.binding_select(options=crimes)
+    crimes_dropdown = alt.binding_select(options=list(df_t4['Category'].unique()))
     crimes_select = alt.selection_single(fields=['Category'], bind=crimes_dropdown,
                                               name="Pick\ Crime")
 
@@ -70,7 +68,6 @@ def make_plot():
     )
 
     return filter_crimes
-
 
 app.layout = html.Div([
     ### ADD CONTENT HERE like: html.H1('text'),
@@ -85,32 +82,24 @@ app.layout = html.Div([
         ),
 
     dcc.Dropdown(
-        options=[
-            {'label': 'Southern', 'value': df['PdDistrict'].unique()[0]},
-            {'label': 'Bayview', 'value': df['PdDistrict'].unique()[1]},
-            {'label': 'Tenderloin', 'value': df['PdDistrict'].unique()[2]},
-            {'label': 'Mission', 'value': df['PdDistrict'].unique()[3]},
-            {'label': 'Northern', 'value': df['PdDistrict'].unique()[4]},
-            {'label': 'Taraval', 'value': df['PdDistrict'].unique()[5]},
-            {'label': 'Ingleside', 'value': df['PdDistrict'].unique()[6]},
-            {'label': 'Central', 'value': df['PdDistrict'].unique()[7]},
-            {'label': 'Richmond', 'value': df['PdDistrict'].unique()[8]},
-            {'label': 'Park', 'value': df['PdDistrict'].unique()[9]}
-
-
-    ],
+        id = 'drop_selection_crime',
+        options=[{'label': i, 'value': i} for i in df_t4['Category'].unique()
+        ],
     style={'height': '15px',
            'width': '300px'},
-    value=df['PdDistrict'].unique()[0],
+    value=df_t4['Category'].unique(),
     multi=True
-
-
-    )
+    ),
 
 ])
 
+@app.callback(
+    Output('plot', 'srcDoc'),
+    [Input('drop_selection_crime', 'value')])
+def update_plot(value_smtn):
 
-
+    updated_plot = make_plot(df_t4[df_t4['Category'].isin(value_smtn)]).to_html()
+    return updated_plot    
 
 if __name__ == '__main__':
     app.run_server(debug=True)
