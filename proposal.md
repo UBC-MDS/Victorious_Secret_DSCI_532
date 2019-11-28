@@ -13,20 +13,6 @@ neighborhoods and allows users to focus on more specific information through
 filtering of geological location, crime rate, crime type or time of the
 crime.
 
-<<<<<<< HEAD
-# 2. Description of the data.
-We will be visualizing approximately 150,500 observations about crime rates in the city of San Francisco for the year of 2016 provided by [Coursera](https://www.coursera.org/) and [IBM]( https://www.ibm.com/). This dataset is available for free on [Kaggle]( https://www.kaggle.com/roshansharma/sanfranciso-crime-dataset), under the Open Database License. Each crime observation is described by 15 attributes; however, we will be focusing on 5 of them for our app. 
-
-•	`IncidntNum` is our primary key, which we will be using to count unique occurrences of a crime. 
-
-•	`Category` feature defines the crime type, e.g. Larceny, theft, assault, etc. Additionally, we will allow our user to modify visualizations based on crime type.
-
-•	`Time` the time of day when the crime took place, we will be transforming this into hour ranges to view crimes between 6am and 7am for example.
-
-•	`PdDistrict` refers to the different districts in the city of San Francisco, we will be giving the user the ability to drill down on rate of crimes at different districts.
-
-•	`X` and `Y` are respectively the latitudes and longitudes of the crime incidents, and we will be using these to form a choropleth map so that the user can view areas of high crime density in the city of San Francisco.
-=======
 
 # 2\. Data Description 
 We will be visualizing approximately 150,500 observations about crime rates in the city of San Francisco for the year of 2016 provided by [Coursera](https://www.coursera.org/) and [IBM]( https://www.ibm.com/). This dataset is available for free on [Kaggle]( https://www.kaggle.com/roshansharma/sanfranciso-crime-dataset), under the Open Database License. Each crime observation is described by 15 attributes; however, we will be focusing on 5 of them for our app. 
@@ -46,4 +32,3 @@ We will be visualizing approximately 150,500 observations about crime rates in t
 
 ## Journalism Crime Reporting 
   And finally, Angela is an investigative journalist who wants to dive deep into the criminal records of San Francisco and find content for her article. The most important questions that she raises are: what was the most notorious crimes for a specified hour and how do these crimes vary across different districts. What was the district with highest incidence reports for each of the top 4 crimes? She logs into the dashboard and goes through hours and locations. Angela sees that Southern district is the most notorious for assault, larceny/theft, and vandalism crimes, with more density towards the border between Mission and Northern districts. And the number of top four criminal offenses reported rises from 5 am onwards and peaks at 6 pm. Moreover, this count drops after 6 pm and is at its lowest at 5 am. That made her think that she needs to conduct a follow-on study about the working hours of people in those districts.
->>>>>>> upstream/master
