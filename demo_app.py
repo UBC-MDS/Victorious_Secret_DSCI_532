@@ -34,7 +34,7 @@ df_t4 = df[df["Category"].isin(top_4_crimes)].copy()
 crimes = ['ASSAULT', 'LARCENY/THEFT', 'VEHICLE THEFT', 'VANDALISM']
 
 def make_plot():
-    chart_1 = alt.Chart(df_t4[]).mark_circle(size=3, opacity = 0.8).encode(
+    chart_1 = alt.Chart(df_t4).mark_circle(size=3, opacity = 0.8).encode(
         longitude='X:Q',
         latitude='Y:Q',
         color = alt.Color('PdDistrict:N', legend = alt.Legend(title = "District")),
