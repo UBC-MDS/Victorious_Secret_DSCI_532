@@ -13,11 +13,11 @@ app = dash.Dash(__name__, assets_folder='assets', external_stylesheets=[dbc.them
 # Boostrap CSS.
 app.css.append_css({'external_url': 'https://codepen.io/amyoshino/pen/jzXypZ.css'})  # noqa: E501
 server = app.server
-app.title = 'Dash app with pure Altair HTML'
+app.title = 'Victorious Secret Crime Analyzer'
 
 #df = pd.read_csv('data/Police_Department_Incidents_-_Previous_Year__2016_.csv')
 
-df = pd.read_csv("https://raw.github.ubc.ca/MDS-2019-20/DSCI_531_lab4_anas017/master/data/Police_Department_Incidents_-_Previous_Year__2016_.csv?token=AAAHQ0dLxUd74i7Zhzh1SJ_UuOaFVI3_ks5d5dT3wA%3D%3D")
+df = pd.read_csv("data/Police_Department_Incidents_-_Previous_Year__2016_.csv")
 df['datetime'] = pd.to_datetime(df[["Date","Time"]].apply(lambda x: x[0].split()[0] +" "+x[1], axis=1), format="%m/%d/%Y %H:%M")
 df['hour'] = df['datetime'].dt.hour     
 df.dropna(inplace=True)
@@ -49,7 +49,7 @@ def make_plot_top(df_new=df_t4):
         y=alt.Y('count()', title = "Count" , scale = alt.Scale(domain = (0,3300))),
         tooltip='count()'
     ).properties(
-        title = "Per hour crime occurrences for the top 4 crimes",
+        title = "Per hour crime occurrences for your selection of the top 4 crimes",
         width=500,
         height = 315
     ).add_selection(
