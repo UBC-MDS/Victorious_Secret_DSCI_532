@@ -17,3 +17,7 @@ The app contains two panels. The top panel displays the overall distribution of 
 
 
 ![Dashboard Sketch](https://github.com/UBC-MDS/Victorious_Secret_DSCI_532/blob/master/img/victorious_secret_dashboard.png?raw=true)
+
+# Functionality Description 
+
+The app contains a main drop-down feature, allowing the user to filter for type of crime. This feature affects the types of crimes shown in the time series panel in the upper right and also affects the crimes available to view in the bottom panel. The slider allows the user to view crime counts at a specified hour of the day starting at Hour 0 or midnight. The bottom panel contains a drop-down menu that allows a user to select a single crime and view its crime count distribution across San Francisco neighborhoods. Hovering over data points in any of the plots brings up a tooltip that provides more information about that specific data point. 
