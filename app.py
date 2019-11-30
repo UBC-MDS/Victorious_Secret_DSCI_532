@@ -15,9 +15,9 @@ app.css.append_css({'external_url': 'https://codepen.io/amyoshino/pen/jzXypZ.css
 server = app.server
 app.title = 'Dash app with pure Altair HTML'
 
-df = pd.read_csv('data/Police_Department_Incidents_-_Previous_Year__2016_.csv')
+#df = pd.read_csv('data/Police_Department_Incidents_-_Previous_Year__2016_.csv')
 
-# df = pd.read_csv("https://raw.github.ubc.ca/MDS-2019-20/DSCI_531_lab4_anas017/master/data/Police_Department_Incidents_-_Previous_Year__2016_.csv?token=AAAHQ0dLxUd74i7Zhzh1SJ_UuOaFVI3_ks5d5dT3wA%3D%3D")
+df = pd.read_csv("https://raw.github.ubc.ca/MDS-2019-20/DSCI_531_lab4_anas017/master/data/Police_Department_Incidents_-_Previous_Year__2016_.csv?token=AAAHQ0dLxUd74i7Zhzh1SJ_UuOaFVI3_ks5d5dT3wA%3D%3D")
 df['datetime'] = pd.to_datetime(df[["Date","Time"]].apply(lambda x: x[0].split()[0] +" "+x[1], axis=1), format="%m/%d/%Y %H:%M")
 df['hour'] = df['datetime'].dt.hour     
 df.dropna(inplace=True)
@@ -28,7 +28,7 @@ top_4_crimes.remove("OTHER OFFENSES")
 # top 4 crimes df subset
 df_t4 = df[df["Category"].isin(top_4_crimes)].copy()
 
-def make_plot_top(df_new=df_t4):
+def make_plot_top(df_new=df):
     
     # Create a plot of the Displacement and the Horsepower of the cars dataset
     # making the slider
@@ -123,11 +123,11 @@ body = dbc.Container(
                         ),
                         dcc.Dropdown(
                                     id = 'drop_selection_crime',
-                                    options=[{'label': i, 'value': i} for i in df_t4['Category'].unique()
+                                    options=[{'label': i, 'value': i} for i in df['Category'].unique()
                                     ],
                                     style={'height': '20px',
                                         'width': '400px'},
-                                    value=df_t4['Category'].unique(),
+                                    value=df['Category'].unique(),
                                     multi=True)
                     ],
                     md=5,
@@ -171,7 +171,7 @@ app.layout = html.Div(body)
     [dash.dependencies.Input('drop_selection_crime', 'value')]
     )
 def update_df(chosen):
-    new_df = df_t4[(df_t4["Category"].isin(chosen))]
+    new_df = df[(df["Category"].isin(chosen))]
     updated_plot_top = make_plot_top(new_df).to_html()
     updated_plot_bottom = make_plot_bot(new_df).to_html()
 
