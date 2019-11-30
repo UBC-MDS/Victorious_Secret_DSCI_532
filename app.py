@@ -15,9 +15,9 @@ app.css.append_css({'external_url': 'https://codepen.io/amyoshino/pen/jzXypZ.css
 server = app.server
 app.title = 'Dash app with pure Altair HTML'
 
-df = pd.read_csv('data/Police_Department_Incidents_-_Previous_Year__2016_.csv')
+#df = pd.read_csv('data/Police_Department_Incidents_-_Previous_Year__2016_.csv')
 
-# df = pd.read_csv("https://raw.github.ubc.ca/MDS-2019-20/DSCI_531_lab4_anas017/master/data/Police_Department_Incidents_-_Previous_Year__2016_.csv?token=AAAHQ0dLxUd74i7Zhzh1SJ_UuOaFVI3_ks5d5dT3wA%3D%3D")
+df = pd.read_csv("https://raw.github.ubc.ca/MDS-2019-20/DSCI_531_lab4_anas017/master/data/Police_Department_Incidents_-_Previous_Year__2016_.csv?token=AAAHQ0dLxUd74i7Zhzh1SJ_UuOaFVI3_ks5d5dT3wA%3D%3D")
 df['datetime'] = pd.to_datetime(df[["Date","Time"]].apply(lambda x: x[0].split()[0] +" "+x[1], axis=1), format="%m/%d/%Y %H:%M")
 df['hour'] = df['datetime'].dt.hour     
 df.dropna(inplace=True)
@@ -115,8 +115,7 @@ body = dbc.Container(
                             aims to help people make decisions when considering their next trip or move to San Francisco, California
                             via visually exploring a dataset of crime statistics. The app provides an overview of the crime rate across
                             neighborhoods and allows users to focus on more specific information through
-                            filtering of geological location, crime rate, crime type or time of the
-                            crime.
+                            filtering crime type or time of the crime.
 
                             Use the box below to choose crimes of interest.
                             """
