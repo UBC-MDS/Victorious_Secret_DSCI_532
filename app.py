@@ -28,7 +28,7 @@ top_4_crimes.remove("OTHER OFFENSES")
 # top 4 crimes df subset
 df_t4 = df[df["Category"].isin(top_4_crimes)].copy()
 
-def make_plot_top(df_new=df):
+def make_plot_top(df_new=df_t4):
     
     # Create a plot of the Displacement and the Horsepower of the cars dataset
     # making the slider
@@ -115,19 +115,18 @@ body = dbc.Container(
                             aims to help people make decisions when considering their next trip or move to San Francisco, California
                             via visually exploring a dataset of crime statistics. The app provides an overview of the crime rate across
                             neighborhoods and allows users to focus on more specific information through
-                            filtering of geological location, crime rate, crime type or time of the
-                            crime.
+                            filtering crime type or time of the crime.
 
                             Use the box below to choose crimes of interest.
                             """
                         ),
                         dcc.Dropdown(
                                     id = 'drop_selection_crime',
-                                    options=[{'label': i, 'value': i} for i in df['Category'].unique()
+                                    options=[{'label': i, 'value': i} for i in df_t4['Category'].unique()
                                     ],
                                     style={'height': '20px',
                                         'width': '400px'},
-                                    value=df['Category'].unique(),
+                                    value=df_t4['Category'].unique(),
                                     multi=True)
                     ],
                     md=5,
@@ -171,7 +170,7 @@ app.layout = html.Div(body)
     [dash.dependencies.Input('drop_selection_crime', 'value')]
     )
 def update_df(chosen):
-    new_df = df[(df["Category"].isin(chosen))]
+    new_df = df_t4[(df_t4["Category"].isin(chosen))]
     updated_plot_top = make_plot_top(new_df).to_html()
     updated_plot_bottom = make_plot_bot(new_df).to_html()
 
