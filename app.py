@@ -49,7 +49,7 @@ def make_plot_top(df_new=df_t4):
         y=alt.Y('count()', title = "Count" , scale = alt.Scale(domain = (0,3300))),
         tooltip='count()'
     ).properties(
-        title = "Per hour crime occurrences for the top 4 crimes",
+        title = "Per hour crime occurrences for your selection of the top 4 crimes",
         width=500,
         height = 315
     ).add_selection(
