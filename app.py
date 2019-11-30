@@ -6,13 +6,12 @@ import pandas as pd
 import numpy as np
 import altair as alt
 import vega_datasets
-import os
-
-wd = os.getcwd()
 
 alt.data_transformers.enable('default')
 alt.data_transformers.disable_max_rows()
-app = dash.Dash(__name__, assets_folder='assets')
+app = dash.Dash(__name__, assets_folder='assets', external_stylesheets=[dbc.themes.BOOTSTRAP])
+# Boostrap CSS.
+app.css.append_css({'external_url': 'https://codepen.io/amyoshino/pen/jzXypZ.css'})  # noqa: E501
 server = app.server
 app.title = 'Dash app with pure Altair HTML'
 
@@ -20,7 +19,7 @@ df = pd.read_csv('data/Police_Department_Incidents_-_Previous_Year__2016_.csv')
 
 # df = pd.read_csv("https://raw.github.ubc.ca/MDS-2019-20/DSCI_531_lab4_anas017/master/data/Police_Department_Incidents_-_Previous_Year__2016_.csv?token=AAAHQ0dLxUd74i7Zhzh1SJ_UuOaFVI3_ks5d5dT3wA%3D%3D")
 df['datetime'] = pd.to_datetime(df[["Date","Time"]].apply(lambda x: x[0].split()[0] +" "+x[1], axis=1), format="%m/%d/%Y %H:%M")
-df['hour'] = df['datetime'].dt.hour
+df['hour'] = df['datetime'].dt.hour     
 df.dropna(inplace=True)
 top_4_crimes = df['Category'].value_counts()[:6].index.to_list()
 top_4_crimes
@@ -34,7 +33,7 @@ def make_plot_top(df_new=df_t4):
     # Create a plot of the Displacement and the Horsepower of the cars dataset
     # making the slider
     slider = alt.binding_range(min = 0, max = 23, step = 1)
-    select_hour = alt.selection_single(name='hour', fields = ['hour'],
+    select_hour = alt.selection_single(name='select', fields = ['hour'],
                                     bind = slider, init={'hour': 0})
 
     #begin of my code
@@ -51,8 +50,8 @@ def make_plot_top(df_new=df_t4):
         tooltip='count()'
     ).properties(
         title = "Per hour crime occurrences for the top 4 crimes",
-        width=600,
-        height = 400
+        width=500,
+        height = 315
     ).add_selection(
         select_hour
     ).transform_filter(
@@ -70,7 +69,7 @@ def make_plot_bot(data=df_t4):
         type='albersUsa'
     ).properties(
         width=450,
-        height=500
+        height=350
     )
 
     chart_2 = alt.Chart(data).mark_bar().encode(
@@ -80,7 +79,7 @@ def make_plot_bot(data=df_t4):
         tooltip=['PdDistrict', 'count()']
     ).properties(
         width=450,
-        height=500
+        height=350
     )
 
     # A dropdown filter
@@ -98,39 +97,75 @@ def make_plot_bot(data=df_t4):
 
     return filter_crimes  
 
-app.layout = html.Div([
-    ### ADD CONTENT HERE like: html.H1('text'),
-    dcc.Dropdown(
-        id = 'drop_selection_crime',
-        options=[{'label': i, 'value': i} for i in df_t4['Category'].unique()
-        ],
-        style={'height': '15px',
-               'width': '300px'},
-        value=df_t4['Category'].unique(),
-        multi=True
-        ),
-    
-    html.Iframe(
-        sandbox = "allow-scripts",
-        id = "plot_top",
-        height = "500",
-        width = "700",
-        style = {"border-width": "5px"},
-        srcDoc = make_plot_top().to_html()
-        ),
-    
-    html.Iframe(
-        sandbox='allow-scripts',
-        id='plot_bot',
-        height='500',
-        width='1200',
-        style={'border-width': '5px'},
-        srcDoc= make_plot_bot().to_html()
-        ),
+body = dbc.Container(
+    [
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        html.H2("San Francisco Crime"),
+                        html.P(
+                            """\
+                            When looking for a place to live or visit, one important factor that people will consider
+                            is the safety of the neighborhood. Searching that information district
+                            by district could be time consuming and exhausting. It is even more difficult to
+                            compare specific crime statistics across districts such as the crime rate
+                            at a certain time of day. It would be useful if people can look up crime
+                            related information across district on one application. Our app
+                            aims to help people make decisions when considering their next trip or move to San Francisco, California
+                            via visually exploring a dataset of crime statistics. The app provides an overview of the crime rate across
+                            neighborhoods and allows users to focus on more specific information through
+                            filtering of geological location, crime rate, crime type or time of the
+                            crime.
 
+                            Use the box below to choose crimes of interest.
+                            """
+                        ),
+                        dcc.Dropdown(
+                                    id = 'drop_selection_crime',
+                                    options=[{'label': i, 'value': i} for i in df_t4['Category'].unique()
+                                    ],
+                                    style={'height': '20px',
+                                        'width': '400px'},
+                                    value=df_t4['Category'].unique(),
+                                    multi=True)
+                    ],
+                    md=5,
+                ),
+                dbc.Col(
+                    [
+                        dbc.Row(
+                            [
+                                html.Iframe(
+                                    sandbox = "allow-scripts",
+                                    id = "plot_top",
+                                    height = "500",
+                                    width = "650",
+                                    style = {"border-width": "0px"},
+                                    srcDoc = make_plot_top().to_html()
+                                    )
+                            ]
+                        )
+                    ]
+                ),
+            ]
+        ),
+        dbc.Row(
+            html.Iframe(
+                sandbox='allow-scripts',
+                id='plot_bot',
+                height='500',
+                width='1200',
+                style={'border-width': '0px'},
+                srcDoc= make_plot_bot().to_html()
+                )
+        )
+    ],
+    className="mt-4",
+)
 
-])
-#my
+app.layout = html.Div(body)
+
 @app.callback([dash.dependencies.Output('plot_top', 'srcDoc'),
     dash.dependencies.Output('plot_bot', 'srcDoc')],
     [dash.dependencies.Input('drop_selection_crime', 'value')]
@@ -143,4 +178,4 @@ def update_df(chosen):
     return updated_plot_top, updated_plot_bottom
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
