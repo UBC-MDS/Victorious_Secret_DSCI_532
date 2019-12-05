@@ -1,6 +1,8 @@
 # Victorious_Secret_DSCI_532
 A San Francisco Crime Rate Dashboard: Criminals Beware. We know all the answers!! 
 
+[App Deployment](https://vs-sf-crime-analyzer.herokuapp.com/)
+
 
 Group Members:
 
