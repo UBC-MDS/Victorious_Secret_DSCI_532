@@ -103,16 +103,11 @@ body = dbc.Container(
             [
                 dbc.Col(
                     [
-                        html.H2("San Francisco Crime"),
+                        html.H2("San Francisco Top 4 Crimes"),
                         html.P(
                             """\
                             When looking for a place to live or visit, one important factor that people will consider
-                            is the safety of the neighborhood. Searching that information district
-                            by district could be time consuming and exhausting. It is even more difficult to
-                            compare specific crime statistics across districts such as the crime rate
-                            at a certain time of day. It would be useful if people can look up crime
-                            related information across district on one application. Our app
-                            aims to help people make decisions when considering their next trip or move to San Francisco, California
+                            is the safety of the neighborhood. This app aims to help people make decisions when considering their next trip or move to San Francisco, California
                             via visually exploring a dataset of crime statistics. The app provides an overview of the crime rate across
                             neighborhoods and allows users to focus on more specific information through
                             filtering crime type or time of the crime.
