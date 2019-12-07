@@ -27,36 +27,86 @@ top_4_crimes.remove("NON-CRIMINAL")
 top_4_crimes.remove("OTHER OFFENSES")
 # top 4 crimes df subset
 df_t4 = df[df["Category"].isin(top_4_crimes)].copy()
+def mds_special():
+    font = "Arial"
+    axisColor = "#000000"
+    gridColor = "#DEDDDD"
+    return {
+        "config": {
+            "title": {
+                "fontSize": 24,
+                "font": font,
+                "anchor": "start", # equivalent of left-aligned.
+                "fontColor": "#000000"
+            },
+            'view': {
+                "height": 300, 
+                "width": 400
+            },
+            "axisX": {
+                "domain": True,
+                #"domainColor": axisColor,
+                "gridColor": gridColor,
+                "domainWidth": 1,
+                "grid": False,
+                "labelFont": font,
+                "labelFontSize": 12,
+                "labelAngle": 0, 
+                "tickColor": axisColor,
+                "tickSize": 5, # default, including it just to show you can change it
+                "titleFont": font,
+                "titleFontSize": 16,
+                "titlePadding": 10, # guessing, not specified in styleguide
+                "title": "X Axis Title (units)", 
+            },
+            "axisY": {
+                "domain": False,
+                "grid": True,
+                "gridColor": gridColor,
+                "gridWidth": 1,
+                "labelFont": font,
+                "labelFontSize": 14,
+                "labelAngle": 0, 
+                #"ticks": False, # even if you don't have a "domain" you need to turn these off.
+                "titleFont": font,
+                "titleFontSize": 16,
+                "titlePadding": 10, # guessing, not specified in styleguide
+                "title": "Y Axis Title (units)", 
+                # titles are by default vertical left of axis so we need to hack this 
+                #"titleAngle": 0, # horizontal
+                #"titleY": -10, # move it up
+                #"titleX": 18, # move it to the right so it aligns with the labels 
+            },
+        }
+            }
 
+# register the custom theme under a chosen name
+alt.themes.register('mds_special', mds_special)
+
+# enable the newly registered theme
+alt.themes.enable('mds_special')
 def make_plot_top(df_new=df_t4):
     
     # Create a plot of the Displacement and the Horsepower of the cars dataset
     # making the slider
     slider = alt.binding_range(min = 0, max = 23, step = 1)
     select_hour = alt.selection_single(name='select', fields = ['hour'],
-                                    bind = slider, init={'hour': 0})
-
-    #begin of my code
-    # typeDict = {'ASSAULT':'quantitative',
-    #             'VANDALISM':'quantitative',
-    #             'LARCENY/THEFT':'quantitative',
-    #             'VEHICLE THEFT':'quantitative'
-    # }
-    # end
+                                    bind = slider, init={'hour': 19})
     
     chart = alt.Chart(df_new).mark_bar(size=30).encode(
         x=alt.X('Category',type='nominal', title='Category'),
         y=alt.Y('count()', title = "Count" , scale = alt.Scale(domain = (0,3300))),
         tooltip='count()'
     ).properties(
-        title = "Per hour crime occurrences for your selection of the top 4 crimes",
+        title = "Hourly crime occurrences for selected crimes",
         width=500,
-        height = 315
+        height = 250
     ).add_selection(
         select_hour
     ).transform_filter(
         select_hour
     )
+    chart.configure_title(fontSize=12)
     return chart
 
 def make_plot_bot(data=df_t4):
@@ -69,8 +119,8 @@ def make_plot_bot(data=df_t4):
         type='albersUsa'
     ).properties(
         width=450,
-        height=350,
-        title='Crime Density Across Neighborhoods'
+        height=360,
+        title= 'Crime Density Across Neighborhoods'
     )
 
     chart_2 = alt.Chart(data).mark_bar().encode(
@@ -91,14 +141,19 @@ def make_plot_bot(data=df_t4):
     # A dropdown filter
     crimes_dropdown = alt.binding_select(options=list(data['Category'].unique()))
     crimes_select = alt.selection_single(fields=['Category'], bind=crimes_dropdown,
-                                              name="Pick\ Crime")
+                                              name="Pick_Crime", 
+                                              init = {'Category': data['Category'].unique()[0]})
 
+    chart_1.configure_title(fontSize=14)
+    chart_2.configure_title(fontSize=14)
     combine_chart = (chart_2 | chart_1)
 
     filter_crimes = combine_chart.add_selection(
         crimes_select
     ).transform_filter(
         crimes_select
+    ).configure_legend(
+    orient='bottom'
     )
 
     return filter_crimes  
@@ -117,10 +172,9 @@ body = dbc.Container(
                             via visually exploring a dataset of crime statistics. The app provides an overview of the crime rate across
                             neighborhoods and allows users to focus on more specific information through
                             filtering crime type or time of the crime.
-
-                            Use the box below to choose crimes of interest.
                             """
                         ),
+                        html.H5("Use the box below to choose crimes of interest:"),
                         dcc.Dropdown(
                                     id = 'drop_selection_crime',
                                     options=[{'label': i, 'value': i} for i in df_t4['Category'].unique()
@@ -139,7 +193,7 @@ body = dbc.Container(
                                 html.Iframe(
                                     sandbox = "allow-scripts",
                                     id = "plot_top",
-                                    height = "500",
+                                    height = "400",
                                     width = "650",
                                     style = {"border-width": "0px"},
                                     srcDoc = make_plot_top().to_html()
