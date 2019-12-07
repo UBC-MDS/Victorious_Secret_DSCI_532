@@ -139,11 +139,15 @@ def make_plot_bot(data=df_t4):
     )
 
     # A dropdown filter
-    crimes_dropdown = alt.binding_select(options=list(data['Category'].unique()))
-    crimes_select = alt.selection_single(fields=['Category'], bind=crimes_dropdown,
-                                              name="Pick_Crime", 
-                                              init = {'Category': data['Category'].unique()[0]})
-
+    if data['Category'].unique().tolist():
+        crimes_dropdown = alt.binding_select(options=list(data['Category'].unique()))
+        crimes_select = alt.selection_single(fields=['Category'], bind=crimes_dropdown,
+                                                name="Pick_Crime", 
+                                                init = {'Category': data['Category'].unique()[0]})
+    else:
+        crimes_dropdown = alt.binding_select(options=list(data['Category'].unique()))
+        crimes_select = alt.selection_single(fields=['Category'], bind=crimes_dropdown,
+                                                name="Pick_Crime")
     chart_1.configure_title(fontSize=14)
     chart_2.configure_title(fontSize=14)
     combine_chart = (chart_2 | chart_1)
