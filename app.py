@@ -5,103 +5,22 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import numpy as np
 import altair as alt
-import vega_datasets
+from py_scripts.plotter import make_plot_top, make_plot_bot
+from py_scripts.wrangle_data import prep_data
 
 alt.data_transformers.enable('default')
 alt.data_transformers.disable_max_rows()
+
 app = dash.Dash(__name__, assets_folder='assets', external_stylesheets=[dbc.themes.BOOTSTRAP])
+
 # Boostrap CSS.
 app.css.append_css({'external_url': 'https://codepen.io/amyoshino/pen/jzXypZ.css'})  # noqa: E501
+
 server = app.server
 app.title = 'Victorious Secret Crime Analyzer'
 
-#df = pd.read_csv('data/Police_Department_Incidents_-_Previous_Year__2016_.csv')
-
-df = pd.read_csv("data/Police_Department_Incidents_-_Previous_Year__2016_.csv")
-df['datetime'] = pd.to_datetime(df[["Date","Time"]].apply(lambda x: x[0].split()[0] +" "+x[1], axis=1), format="%m/%d/%Y %H:%M")
-df['hour'] = df['datetime'].dt.hour     
-df.dropna(inplace=True)
-top_4_crimes = df['Category'].value_counts()[:6].index.to_list()
-top_4_crimes
-top_4_crimes.remove("NON-CRIMINAL")
-top_4_crimes.remove("OTHER OFFENSES")
-# top 4 crimes df subset
-df_t4 = df[df["Category"].isin(top_4_crimes)].copy()
-
-def make_plot_top(df_new=df_t4):
-    
-    # Create a plot of the Displacement and the Horsepower of the cars dataset
-    # making the slider
-    slider = alt.binding_range(min = 0, max = 23, step = 1)
-    select_hour = alt.selection_single(name='select', fields = ['hour'],
-                                    bind = slider, init={'hour': 0})
-
-    #begin of my code
-    # typeDict = {'ASSAULT':'quantitative',
-    #             'VANDALISM':'quantitative',
-    #             'LARCENY/THEFT':'quantitative',
-    #             'VEHICLE THEFT':'quantitative'
-    # }
-    # end
-    
-    chart = alt.Chart(df_new).mark_bar(size=30).encode(
-        x=alt.X('Category',type='nominal', title='Category'),
-        y=alt.Y('count()', title = "Count" , scale = alt.Scale(domain = (0,3300))),
-        tooltip='count()'
-    ).properties(
-        title = "Per hour crime occurrences for your selection of the top 4 crimes",
-        width=500,
-        height = 315
-    ).add_selection(
-        select_hour
-    ).transform_filter(
-        select_hour
-    )
-    return chart
-
-def make_plot_bot(data=df_t4):
-    chart_1 = alt.Chart(data).mark_circle(size=3, opacity = 0.8).encode(
-        longitude='X:Q',
-        latitude='Y:Q',
-        color = alt.Color('PdDistrict:N', legend = alt.Legend(title = "District")),
-        tooltip = 'PdDistrict'
-    ).project(
-        type='albersUsa'
-    ).properties(
-        width=450,
-        height=350,
-        title='Crime Density Across Neighborhoods'
-    )
-
-    chart_2 = alt.Chart(data).mark_bar().encode(
-        x=alt.X('PdDistrict:N',
-                axis=None,
-                title="Neighborhood District",
-                sort=alt.EncodingSortField(field='PdDistrict', op='count', order='descending')),
-        y=alt.Y('count()',
-                title="Count of Reports"),
-        color=alt.Color('PdDistrict:N', legend=alt.Legend(title="District")),
-        tooltip=['PdDistrict', 'count()']
-    ).properties(
-        width=450,
-        height=350,
-        title='Distribution of Crime Reports Across Neighborhoods'
-    )
-
-    # A dropdown filter
-    crimes_dropdown = alt.binding_select(options=list(data['Category'].unique()))
-    crimes_select = alt.selection_single(fields=['Category'], bind=crimes_dropdown,
-                                              name="Pick\ Crime")
-
-    combine_chart = (chart_2 | chart_1)
-
-    filter_crimes = combine_chart.add_selection(
-        crimes_select
-    ).transform_filter(
-        crimes_select
-    )
-
-    return filter_crimes  
+# get the top 4 crimes df
+df_t4 = prep_data()
 
 body = dbc.Container(
     [
@@ -117,10 +36,9 @@ body = dbc.Container(
                             via visually exploring a dataset of crime statistics. The app provides an overview of the crime rate across
                             neighborhoods and allows users to focus on more specific information through
                             filtering crime type or time of the crime.
-
-                            Use the box below to choose crimes of interest.
                             """
                         ),
+                        html.H5("Use the box below to choose crimes of interest:"),
                         dcc.Dropdown(
                                     id = 'drop_selection_crime',
                                     options=[{'label': i, 'value': i} for i in df_t4['Category'].unique()
@@ -139,10 +57,10 @@ body = dbc.Container(
                                 html.Iframe(
                                     sandbox = "allow-scripts",
                                     id = "plot_top",
-                                    height = "500",
+                                    height = "400",
                                     width = "650",
                                     style = {"border-width": "0px"},
-                                    srcDoc = make_plot_top().to_html()
+                                    srcDoc = make_plot_top(df_t4).to_html()
                                     )
                             ]
                         )
@@ -157,7 +75,7 @@ body = dbc.Container(
                 height='500',
                 width='1200',
                 style={'border-width': '0px'},
-                srcDoc= make_plot_bot().to_html()
+                srcDoc= make_plot_bot(df_t4).to_html()
                 )
         )
     ],
