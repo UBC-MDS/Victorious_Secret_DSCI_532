@@ -69,17 +69,23 @@ def make_plot_bot(data=df_t4):
         type='albersUsa'
     ).properties(
         width=450,
-        height=350
+        height=350,
+        title='Crime Density Across Neighborhoods'
     )
 
     chart_2 = alt.Chart(data).mark_bar().encode(
-        x=alt.X('PdDistrict:N', axis=None, title="District"),
-        y=alt.Y('count()', title="Count of reports"),
+        x=alt.X('PdDistrict:N',
+                axis=None,
+                title="Neighborhood District",
+                sort=alt.EncodingSortField(field='PdDistrict', op='count', order='descending')),
+        y=alt.Y('count()',
+                title="Count of Reports"),
         color=alt.Color('PdDistrict:N', legend=alt.Legend(title="District")),
         tooltip=['PdDistrict', 'count()']
     ).properties(
         width=450,
-        height=350
+        height=350,
+        title='Distribution of Crime Reports Across Neighborhoods'
     )
 
     # A dropdown filter
